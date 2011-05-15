@@ -20,10 +20,12 @@
 
 ## How does it work?
 
-  The heavy lifting is done by [chef](http://en.wikipedia.org/wiki/Chef_(software))
+  The heavy lifting is done by [chef](http://en.wikipedia.org/wiki/Chef_(software)
   and [Vagrant](http://vagrantup.com/). Vagrant is a tool for building virtual
-  machines programmatically. This tool relies on Sun's (Oracle now) [virtualbox] 
-  virtualization product.  Chef is a framework to provision boxes programmatically.
+  machines programmatically. This tool relies on Sun's 
+  [virtualbox](http://www.virtualbox.org/)
+  virtualization product (Oracle now).  
+  Chef is a framework to provision boxes programmatically.
 
   Our tool uses the features of all these tools to programmatically implement
   what we described in the introduction.
