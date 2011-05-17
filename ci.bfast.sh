@@ -2,51 +2,36 @@
 #
 set -e
 #
-# The process looks like this:
-#
-# box
-#   branch
-#     unless Darwin
-#       + fireup box
-#       + clone, autogen, config, make, make test 
-#       + destory box
-#     else
-#       + clone, autogen, config, make, make test 
-#       + remove
-#   update html page
-# 
-boxes=(darwin lucid32 lucid64)
+boxes=(lucid32 lucid64)
 branches=(bfast bfast-bwa)
 tmp="/tmp/$0.$(echo $RANDOM)"
-git_url="git://bfast.git.sourceforge.net/gitroot/bfast/"
+git_url="git://bfast.git.sourceforge.net/gitroot/bfast"
 
-have_changes()
+log()
 {
-  [ `git pull | wc -l` == 1 ] && return 0 || return 1
+  echo "`date`>> $1"
+  return 0
 }
 
-before_darwin()
+look_for_changes()
 {
-  if [ -d $brand ];then
-    cd $brand
-    have_changes
-    [ $? -eq 1 ] && return 1 || return 0
+  local b=$1
+  if [ -d $b ];then
+    cd $b
+    [ `git pull | wc -l` == 1 ] && echo 0 || echo 1
   else
-    git clone $git_url/$branch
+    git clone -q $git_url/$b
+    echo 1 
   fi
 }
 
 # 
 # Main
-for box in "${boxes[@]}";do
-  for branch in "${branches[@]}"; do
-    if [ $box == "darwin" ];then
-      before_darwin
-      after_darwin
-    else
-      echo "$box:$branch"
-      before_vb
-      after_vb 
-    fi
-  done
+for branch in "${branches[@]}"; do
+  changes=$(look_for_changes $branch)
+  if [ $changes == "1" ];then
+    log "$branch: CHANGES"
+  else
+    log "$branch: NO changes"
+  fi
 done
