@@ -9,8 +9,7 @@ git_url="git://bfast.git.sourceforge.net/gitroot/bfast"
 
 log()
 {
-  echo "`date`>> $1"
-  return 0
+  echo "`date`>> $1" 1>&2
 }
 
 look_for_changes()
