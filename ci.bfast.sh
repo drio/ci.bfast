@@ -18,8 +18,9 @@ look_for_changes()
 {
   local b=$1
   if [ -d $b ];then
-    log "pulling"
     cd $b
+    log "make clean" ; make clean &>/dev/null
+    log "pulling"
     [ `git pull | wc -l` == 1 ] && echo 0 || echo 1
     cd ..
   else
@@ -47,13 +48,23 @@ compile_pipe()
 # The local machine is a Darwin(OSX) box. 
 #
 mkdir -p $logs_dir
+active_branches=""
 for branch in "${branches[@]}"; do
   log "Looking for changes in branch: $branch"
   changes=$(look_for_changes $branch)
   if [ $changes == "1" ];then
     log "$branch: NEW commits."
+    active_branches="$active_branches $branch"  
     compile_pipe $branch "Darwin"
   else
     log "$branch: NO new commits"
+    active_branches="$active_branches $branch"  
   fi
+done
+
+# If new commits in branch, run pipe in the 
+# different virtual boxes
+for branch in $active_branches
+do
+  echo $branch
 done
