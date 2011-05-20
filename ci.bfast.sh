@@ -8,6 +8,10 @@ tmp="/tmp/$0.$(echo $RANDOM)"
 git_url="git://bfast.git.sourceforge.net/gitroot/bfast"
 logs_dir="`pwd`/logs"
 ts=`date +%d.%m.%y.%H.%S.%s`
+identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
+ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
+-o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
+-i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1 "
 
 log()
 {
@@ -64,7 +68,15 @@ done
 
 # If new commits in branch, run pipe in the 
 # different virtual boxes
+# 1. set vagrant file
+# 2. destory vb
+# 3. up vb
+# 4. ssh bfast pipe and log
 for branch in $active_branches
 do
   echo $branch
 done
+
+( $ssh_cmd "cd /vagrant/bfast && make clean && sh ./autogen.sh && ./configure && make && make check")  &
+wait
+echo "XXXXXXXXXXXXXXX"
