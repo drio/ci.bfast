@@ -1,0 +1,3 @@
++ parse logs and generate json file with data
++ render html with jade
++ ssh/rsync update html in webserver

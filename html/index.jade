@@ -1,0 +1,23 @@
+html
+  head
+    title bfast-ci
+    link(rel='stylesheet', href='style.css')
+  body
+  table
+    tr
+      td date
+      td bfast darwin
+      td bfast lucid32
+      td bfast lucid64
+      td bfast-bwa darwin
+      td bfast-bwa lucid32
+      td bfast-bwa lucid64
+    - each entry, ts in entries
+      tr 
+        td #{ts}
+        td #{entry.darwin.bfast}
+        td #{entry.lucid32.bfast}        
+        td #{entry.lucid64.bfast}
+        td #{entry.darwin.bfast_bwa}
+        td #{entry.lucid32.bfast_bwa}        
+        td #{entry.lucid64.bfast_bwa}
