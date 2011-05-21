@@ -93,8 +93,7 @@ for box in "${boxes[@]}"; do
     log "Building branch ${branch} on ${box}"
     ($ssh_cmd "cd /vagrant/bfast && \
     make clean && sh ./autogen.sh && \
-    ./configure && make") >> $current_log 2>&1 
-    #./configure && make && make check")  >> $current_log 2>&1 
+    ./configure && make && make check")  >> $current_log 2>&1 
     exit_status=$?
     log "Exit status: $exit_status"
     mv $current_log $current_log.$exit_status.log
