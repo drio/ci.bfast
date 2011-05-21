@@ -9,10 +9,6 @@ tmp="/tmp/$0.$(echo $RANDOM)"
 git_url="git://bfast.git.sourceforge.net/gitroot/bfast"
 logs_dir="`pwd`/logs"
 ts=`date +%d.%m.%y.%H.%S.%s`
-identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
-ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
--o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
--i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1"
 
 log()
 {
@@ -85,6 +81,11 @@ for box in "${boxes[@]}"; do
     rm -f $v_file; ln -s $v_cfg_files/${box}.vf $v_file
     log "Starting box: ${box}"
     vagrant up #2>&1 >> $current_log
+   
+    identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
+    ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
+    -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
+    -i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1"
 
     log "Building bfast: ${box}"
     $ssh_cmd "cd /vagrant/bfast && \
