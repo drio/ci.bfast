@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-set -e
-set -x
+#set -e
+#set -x
 #
 boxes=(lucid32 lucid64)
 branches=(bfast bfast-bwa)
@@ -59,6 +59,7 @@ for branch in "${branches[@]}"; do
     compile_pipe $branch "Darwin"
   else
     log "$branch: NO new commits"
+    # uncomment for testing 
     active_branches="$active_branches $branch"  
   fi
 done
@@ -75,24 +76,27 @@ v_cfg_files="vagrant_files"
 logs_dir="`pwd`/logs"
 for box in "${boxes[@]}"; do
   for branch in $active_branches; do
-    current_log="$logs_dir/$box.$ts.log"
+    current_log="$logs_dir/$box.$branch.$ts.log"
     log "Working on box: ${box} branch: ${branch}"
     
     rm -f $v_file; ln -s $v_cfg_files/${box}.vf $v_file
     log "Starting box: ${box}"
-    vagrant up #2>&1 >> $current_log
+    vagrant up >> $current_log 2>&1 
    
     identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
     ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
     -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
     -i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1"
 
-    log "Building bfast: ${box}"
-    $ssh_cmd "cd /vagrant/bfast && \
+    log "Building branch ${branch} on ${box}"
+    ($ssh_cmd "cd /vagrant/bfast && \
     make clean && sh ./autogen.sh && \
-    ./configure && make && make check"  #2>&1 >> $current_log
-    log "Exit status: $?"
+    ./configure && make && make check")  >> $current_log 2>&1 
+    exit_status=$?
+    log "Exit status: $exit_status"
+    mv $current_log $current_log.$exit_status.log
+    current_log=$current_log.$exit_status.log
   done 
   log "Destroying vb: ${box}"
-  vagrant destroy #2>&1 >> $current_log 
+  vagrant destroy >> $current_log 2>&1 
 done
