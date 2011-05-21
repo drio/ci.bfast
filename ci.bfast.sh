@@ -74,29 +74,33 @@ done
 v_file="Vagrantfile"
 v_cfg_files="vagrant_files"
 logs_dir="`pwd`/logs"
+vagrant_log="logs/vagrant.log"
+rm -f $vagrant_log
 for box in "${boxes[@]}"; do
-  for branch in $active_branches; do
-    current_log="$logs_dir/$box.$branch.$ts.log"
-    log "Working on box: ${box} branch: ${branch}"
-    
-    rm -f $v_file; ln -s $v_cfg_files/${box}.vf $v_file
-    log "Starting box: ${box}"
-    vagrant up >> $current_log 2>&1 
-   
-    identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
+  rm -f $v_file; ln -s $v_cfg_files/${box}.vf $v_file
+  log "Starting box: ${box}"
+  vagrant up >> $vagrant_log 2>&1 
+
+  identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
     ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
     -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
     -i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1"
 
+  for branch in $active_branches; do
+    current_log="$logs_dir/$box.$branch.$ts.log"
+    log "Working on box: ${box} branch: ${branch}"
+  
     log "Building branch ${branch} on ${box}"
     ($ssh_cmd "cd /vagrant/bfast && \
     make clean && sh ./autogen.sh && \
-    ./configure && make && make check")  >> $current_log 2>&1 
+    ./configure && make") >> $current_log 2>&1 
+    #./configure && make && make check")  >> $current_log 2>&1 
     exit_status=$?
     log "Exit status: $exit_status"
     mv $current_log $current_log.$exit_status.log
     current_log=$current_log.$exit_status.log
   done 
+
   log "Destroying vb: ${box}"
-  vagrant destroy >> $current_log 2>&1 
+  vagrant destroy >> $vagrant_log 2>&1 
 done
