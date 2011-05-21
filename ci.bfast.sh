@@ -1,6 +1,7 @@
 #!/bin/bash
 #
 set -e
+set -x
 #
 boxes=(lucid32 lucid64)
 branches=(bfast bfast-bwa)
@@ -11,7 +12,7 @@ ts=`date +%d.%m.%y.%H.%S.%s`
 identity_file=`vagrant ssh_config | grep IdentityFile | awk '{print $2}'`
 ssh_cmd="ssh -p 2222 -o UserKnownHostsFile=/dev/null \
 -o StrictHostKeyChecking=no -o IdentitiesOnly=yes \
--i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1 "
+-i $identity_file -o LogLevel=ERROR vagrant@127.0.0.1"
 
 log()
 {
@@ -72,11 +73,25 @@ done
 # 2. destory vb
 # 3. up vb
 # 4. ssh bfast pipe and log
-for branch in $active_branches
-do
-  echo $branch
-done
+#
+v_file="Vagrantfile"
+v_cfg_files="vagrant_files"
+logs_dir="`pwd`/logs"
+for box in "${boxes[@]}"; do
+  for branch in $active_branches; do
+    current_log="$logs_dir/$box.$ts.log"
+    log "Working on box: ${box} branch: ${branch}"
+    
+    rm -f $v_file; ln -s $v_cfg_files/${box}.vf $v_file
+    log "Starting box: ${box}"
+    vagrant up #2>&1 >> $current_log
 
-( $ssh_cmd "cd /vagrant/bfast && make clean && sh ./autogen.sh && ./configure && make && make check")  &
-wait
-echo "XXXXXXXXXXXXXXX"
+    log "Building bfast: ${box}"
+    $ssh_cmd "cd /vagrant/bfast && \
+    make clean && sh ./autogen.sh && \
+    ./configure && make && make check"  #2>&1 >> $current_log
+    log "Exit status: $?"
+  done 
+  log "Destroying vb: ${box}"
+  vagrant destroy #2>&1 >> $current_log 
+done
