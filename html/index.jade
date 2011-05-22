@@ -14,10 +14,10 @@ html
       td bfast-bwa lucid64
     - each entry, ts in entries
       tr 
-        td #{ts}
-        td #{entry.Darwin.bfast}
-        td #{entry.lucid32.bfast}        
-        td #{entry.lucid64.bfast}
-        td #{entry.Darwin.bfast_bwa}
-        td #{entry.lucid32.bfast_bwa}        
-        td #{entry.lucid64.bfast_bwa}
+        td= ts
+        td= entry.Darwin.bfast
+        td= entry.lucid32.bfast
+        td= entry.lucid64.bfast
+        td= entry.Darwin['bfast-bwa']
+        td= entry.lucid32['bfast-bwa']
+        td= entry.lucid64['bfast-bwa']
