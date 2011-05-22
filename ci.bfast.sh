@@ -50,19 +50,32 @@ compile_pipe()
 #
 mkdir -p $logs_dir
 active_branches=""
+arch="Darwin"
 for branch in "${branches[@]}"; do
   log "Looking for changes in branch: $branch"
   changes=$(look_for_changes $branch)
   if [ $changes == "1" ];then
     log "$branch: NEW commits."
     active_branches="$active_branches $branch"  
-    compile_pipe $branch "Darwin"
+    #compile_pipe $branch "Darwin"
+    # TODO: DRY, refactor
+    current_log="$logs_dir/$arch.$branch.$ts.log"
+    log "Building $branch in $arch"
+    cd $branch
+    (sh ./autogen.sh && ./configure && make && make check) &> \
+      $logs_dir/$arch.$branch.$ts.log
+    exit_status=$?
+    log "Exit status: $exit_status"
+    mv $current_log $current_log.$exit_status.log
+    cd ..
   else
     log "$branch: NO new commits"
     # uncomment for testing 
-    active_branches="$active_branches $branch"  
+    #active_branches="$active_branches $branch"  
   fi
 done
+
+[ ".$active_branches" == "." ] && exit
 
 # If new commits in branch, run pipe in the 
 # different virtual boxes
