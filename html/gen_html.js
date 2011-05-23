@@ -40,6 +40,11 @@ fs.readdir("../logs", function(err, files) {
     if (!entries[ts]) { entries[ts] = {};}
     if (!entries[ts][box]) { entries[ts][box] = {};}
     entries[ts][box][branch] = e_status;
+    entries[ts].day = day; entries[ts].month = month; entries[ts].year = year;    
+    entries[ts].hour = day; entries[ts].min = month;
+    entries[ts].date = day + "." + month + "." + year + "." + hour + "." + 
+                       min + "." + ts;
+    entries[ts].log_root = entries[ts].date + ".log." + e_status + ".log"
   });
 
   var options = {};

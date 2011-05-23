@@ -60,7 +60,7 @@ for branch in "${branches[@]}"; do
     #compile_pipe $branch "Darwin"
     # TODO: DRY, refactor
     current_log="$logs_dir/$arch.$branch.$ts.log"
-    log "Building $branch in $arch"
+    log "Building [$branch] in [$arch]"
     cd $branch
     (sh ./autogen.sh && ./configure && make && make check) &> \
       $logs_dir/$arch.$branch.$ts.log
@@ -101,7 +101,7 @@ for box in "${boxes[@]}"; do
 
   for branch in $active_branches; do
     current_log="$logs_dir/$box.$branch.$ts.log"
-    log "Working on box: ${box} branch: ${branch}"
+    log "Working on box: [${box}] branch: [${branch}]"
   
     log "Building branch ${branch} on ${box}"
     ($ssh_cmd "cd /vagrant/bfast && \
