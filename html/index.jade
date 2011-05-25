@@ -19,22 +19,9 @@ html
         - ["Darwin", "lucid32", "lucid64"].forEach(function(b){
           - ["bfast", "bfast-bwa"].forEach(function(b){
             td
-              - var link = "AAAAAAAAAAAAAAA";
-              - var text = "_______________";
+              - var link = "/logs/" + e.box + "." + e.branch + "." + e.log_root;
+              - var text = e.e_status === "0" ? "OK" : "ERROR";
               a(href=link) #{text}
           - })
         - })
 
-        //
-          td 
-            a(href='AAAAAAAAA') #{e.Darwin.bfast}
-          td 
-            a(href='XXXXXXXXXXX') #{e.lucid32.bfast}
-          td 
-            a(href='XXXXXXXXXXX') #{e.lucid64.bfast}
-          td 
-            a(href='XXXXXXXXXXX') #{e.Darwin['bfast-bwa']}
-          td 
-            a(href='XXXXXXXXXXX') #{e.lucid32['bfast-bwa']}
-          td 
-            a(href='XXXXXXXXXXX') #{e.lucid64['bfast-bwa']}
