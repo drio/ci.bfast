@@ -21,7 +21,10 @@ html
             td
               - var link = "/logs/" + e.box + "." + e.branch + "." + e.log_root;
               - var text = e.e_status === "0" ? "OK" : "ERROR";
-              a(href=link) #{text}
+              - if (e.e_status === "0")
+                a(href=link) #{text}
+              - else
+                a.red(href=link) #{text}
           - })
         - })
 

@@ -11,13 +11,17 @@ table
 table,th, td
 {
   border: 1px solid black;
+  padding: 3px;
+  text-align:center;
 }
+
+a.red { color: #F00; }
 
 h1, h2 {
   color: #c00;
 }
 a {
-  color: #c00;
+  color: #0B0;
   text-decoration: none;
 }
 a:hover {
